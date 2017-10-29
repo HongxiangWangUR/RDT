@@ -76,6 +76,7 @@ void Sender_Final()
    sender */
 void Sender_FromUpperLayer(struct message *msg)
 {
+  printf("function Sender_FromUpperLayer begin:\n");
   /* if the output buffer is full, then we just throw this packet */
   if(num_of_packet>=MAX_BUFFER_SIZE){
     printf("the buffer is full!\n");
@@ -192,6 +193,7 @@ void Sender_FromUpperLayer(struct message *msg)
    sender */
 void Sender_FromLowerLayer(struct packet *pkt)
 {
+  printf("function Sender from lower layer begin\n");
   int corrupted=check_packet(pkt);
   /* first judge if this packet is corrupted */
   printf("sender corrupted=%d\n",corrupted);
@@ -201,8 +203,8 @@ void Sender_FromLowerLayer(struct packet *pkt)
       return;
   }
   if(corrupted != TRUE){
-    int seq_num=pkt->data[0];  //seq number of acked packet
-    int base_seq=buffer[base].data[0];  //window base sequnce number
+    int seq_num=(unsigned char)pkt->data[0];  //seq number of acked packet
+    int base_seq=(unsigned char)buffer[base].data[0];  //window base sequnce number
     /* interval is the distance between the window base and acked packet */
     int interval=(seq_num-base_seq+MAX_SEQ)%MAX_SEQ;
     //test
@@ -238,7 +240,7 @@ void Sender_Timeout()
 {
   /* calculate the number of packet to be sent */
   printf("timeout\n");
-  if(num_of_packet==0){
+  if(num_of_packet<=0){
     printf("there are not packet in the buffer, stop timer and function Sender_Timeout finished\n");
     Sender_StopTimer();
     return;
@@ -316,6 +318,11 @@ unsigned short check_sum(unsigned short *a, int len)
  * If it is corrupted then return TRUE and if not return FALSE
  */
 int check_packet(struct packet* pkt){
+  /* if the number of data is less than zero, then it must be corrupted */
+  printf("sender check packet begin\n");
+  if(pkt->data[1]<0){
+    return TRUE;
+  }
   /* number of the bytes in whole packet */
   int bsize=pkt->data[1]+HEADER_LEN;
   /* size of the 16-bit word buffer */

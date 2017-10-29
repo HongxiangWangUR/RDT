@@ -64,19 +64,19 @@ void Receiver_Final()
    receiver */
 void Receiver_FromLowerLayer(struct packet *pkt)
 {
-    //test
+  printf("function receiver from lower layer begin\n");
+    /* first we find if the packet is corrupted */
+    int corrupted=receiver_check(pkt);
+    printf("receiver corrupted=%d\n",corrupted);
+    /* if it is not corrupted */
+    if(corrupted != TRUE){
+      //test
       printf("receive packet:");
       for(int i=0;i<pkt->data[1]+4;i++){
         printf("%d",pkt->data[i]);
       }
       printf("\n");
       //end
-
-    /* first we find if the packet is corrupted */
-    int corrupted=receiver_check(pkt);
-    printf("receiver corrupted=%d\n",corrupted);
-    /* if it is not corrupted */
-    if(corrupted != TRUE){
         /* get the sequence number in the packet */
         int seq_num=(unsigned char)pkt->data[0];
         printf("receiver sequence=%d, expected sequence=%d\n",seq_num,expected_seq);
@@ -120,6 +120,11 @@ void Receiver_FromLowerLayer(struct packet *pkt)
  * If it is corrupted then return TRUE and if not return FALSE
  */
 int receiver_check(struct packet* pkt){
+  /* if the number of data is less than zero, then it must be corrupted */
+  printf("receiver check packet begin\n");
+  if(pkt->data[1]<0){
+    return TRUE;
+  }
   /* number of the bytes in whole packet */
   int bsize=pkt->data[1]+HEADER_LEN;
   /* size of the 16-bit word buffer */
