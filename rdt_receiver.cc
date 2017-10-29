@@ -84,7 +84,7 @@ void Receiver_FromLowerLayer(struct packet *pkt)
         /* if the packet is as expected */
         if(seq_num==expected_seq){
             /* set the acked sequence number */
-            tosender.data[0]=seq_num;
+            tosender.data[0]=expected_seq;
             /* set the next sequence number */
             expected_seq++;
             expected_seq=expected_seq%MAX_SEQ;
@@ -107,7 +107,7 @@ void Receiver_FromLowerLayer(struct packet *pkt)
         tosender.data[2]=(check>>8);
         tosender.data[3]=(check&0xff);
         Receiver_ToLowerLayer(&tosender);
-        printf("receiver send acked sequence number=%d\n",tosender.data[0]);
+        printf("receiver send acked sequence number=%d\n",(unsigned char)tosender.data[0]);
     }else{
         printf("the packet is corrupted so it was ignored\n");
     }

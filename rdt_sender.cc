@@ -49,6 +49,7 @@ int next_buffer_position=0; //the next buffer position to store the data, range 
 int next_seq=0; //the next sequence number in the sequence number field, range [ 0 ~ MAX_SEQ-1 ]
 int base=0; //point to the base of the window, range [ 0 ~ max_buffer_size-1 ]
 int num_of_packet=0; //the number of packet in the buffer, range [ 0 ~ max_buffer_size ]
+struct packet emptypacket={0};
 
 /* added function declerations are here */
 unsigned short get_checksum(packet pkt, int size);
@@ -95,8 +96,11 @@ void Sender_FromUpperLayer(struct message *msg)
    */
   while( msg->size-cursor > maxpayload_size ){
     /* if the output buffer is full, then we just throw this packet */
-    if(num_of_packet>=MAX_BUFFER_SIZE)
+    if(num_of_packet>=MAX_BUFFER_SIZE){
+      printf("the buffer is full! Please try again!\n");
+      exit(0);
       return;
+    }
     /* set the sequnce number */
     pkt.data[0]=next_seq;
     /* set the next sequnce number */
@@ -138,6 +142,7 @@ void Sender_FromUpperLayer(struct message *msg)
     next_buffer_position=next_buffer_position % MAX_BUFFER_SIZE;
     /* increment the number of packet */
     num_of_packet++;
+    pkt=emptypacket;
   }
 
   /* deal with the last packet */
@@ -219,6 +224,7 @@ void Sender_FromLowerLayer(struct packet *pkt)
       /* update base and number of packet and send new packet */
       printf("window base move=%d\n",move);
       for(int i=0;i<move;i++){
+        buffer[base]=emptypacket;
         base=(base+1)%MAX_BUFFER_SIZE;
         num_of_packet--;
         if(num_of_packet>=10){
