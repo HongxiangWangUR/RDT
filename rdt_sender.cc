@@ -79,7 +79,8 @@ void Sender_FromUpperLayer(struct message *msg)
   printf("function Sender_FromUpperLayer begin:\n");
   /* if the output buffer is full, then we just throw this packet */
   if(num_of_packet>=MAX_BUFFER_SIZE){
-    printf("the buffer is full!\n");
+    printf("the buffer is full! Please try again!\n");
+    exit(0);
     return;
   }
 
