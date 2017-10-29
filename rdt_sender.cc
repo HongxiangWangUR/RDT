@@ -195,6 +195,11 @@ void Sender_FromLowerLayer(struct packet *pkt)
   int corrupted=check_packet(pkt);
   /* first judge if this packet is corrupted */
   printf("sender corrupted=%d\n",corrupted);
+  /* if there is not packet in in the buffer then we ignore the message sent from receiver*/
+  if(num_of_packet==0){
+      printf("there is not packet int the buffer, function Sender_FromLowerLayer finished");
+      return;
+  }
   if(corrupted != TRUE){
     int seq_num=pkt->data[0];  //seq number of acked packet
     int base_seq=buffer[base].data[0];  //window base sequnce number
